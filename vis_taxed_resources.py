@@ -2,9 +2,9 @@ from pathlib import Path
 import plotly.express as px
 import plotly.graph_objects as go
 import json
-import _guild_api
+from _guild_api import _guild_api
 
-_guild_api()
+_guild_api(GUILDID, "GUILDAPI") # example _guild_api(30,"abcd-12345-6789")
 
 path = Path('guild_api_response.json')
 content = path.read_text(encoding="utf-8")

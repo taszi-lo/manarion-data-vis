@@ -20,7 +20,7 @@ pip install plotly pandas
 ---
 
 ## Usage
-Clone the repository, enter guild ID and api to guildapi parameters(_guild_api(x,y)) and run the visualizations locally:
+Clone the repository, enter guild ID and api to guildapi parameters(_guild_api(x,"y")) and run the visualizations locally:
 git clone https://github.com/taszi-lo/manarion-data-vis.git
 
 cd manarion-data-vis
