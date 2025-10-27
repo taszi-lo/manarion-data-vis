@@ -2,7 +2,7 @@ import requests
 import json
 from pathlib import Path
 
-def guild_api(guild_id, api_key):
+def _guild_api(guild_id, api_key):
     """ Make an api call, and store the response."""
     url= f"https://api.manarion.com/guilds/{guild_id}?apikey={api_key}"
     r = requests.get(url)

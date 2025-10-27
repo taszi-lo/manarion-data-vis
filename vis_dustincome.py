@@ -2,14 +2,15 @@ from pathlib import Path
 import json
 import plotly.express as px
 import plotly.graph_objects as go
-from guild_api import guild_api
-from guildmembers import guildmembers
-from api_merge import api_merge
-from market_data import market_data
-market_data()
-guild_api(25, '66d45768-7562-4762-bda1-b9441524e356')
-guildmembers()
-api_merge()
+import _guild_api
+import _guildmembers
+import _api_merge
+import _market_data
+
+_guild_api()
+_market_data()
+_guildmembers()
+_api_merge()
 
 playerpath = Path('extended_playerdata.json')
 marketpath = Path('market_values.json')

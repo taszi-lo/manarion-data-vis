@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 import requests
 
-def guildmembers():
+def _guildmembers():
     """Build the apis of the members and make a file from the data in them."""
     path = Path('guild_api_response.json')
     content = path.read_text(encoding="utf-8")

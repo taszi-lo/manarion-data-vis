@@ -2,6 +2,13 @@ from pathlib import Path
 import json
 import plotly.express as px
 import math
+import _guild_api
+import _guildmembers
+import _api_merge
+
+_guild_api()
+_guildmembers()
+_api_merge()
 
 path = Path('extended_playerdata.json')
 content = path.read_text(encoding='utf-8')

@@ -2,7 +2,7 @@ import requests
 import json
 from pathlib import Path
 
-def market_data():
+def _market_data():
     """ Make an api call, and store the response."""
     url= "https://api.manarion.com/market"
     r = requests.get(url)

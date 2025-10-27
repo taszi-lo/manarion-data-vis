@@ -2,6 +2,9 @@ from pathlib import Path
 import plotly.express as px
 import plotly.graph_objects as go
 import json
+import _guild_api
+
+_guild_api()
 
 path = Path('guild_api_response.json')
 content = path.read_text(encoding="utf-8")
@@ -55,18 +58,3 @@ fig.update_layout(
     yaxis_title ="Total contribution",
 )
 fig.show()
-
-
-
-"""names = []
-codex = []
-for member_id, info in members.items():
-    name = info["Name"]
-    names.append(name)
-    codi = info["Contributions"].get("3", 0)
-    codex.append(codi)
-
-title = "Guild contributions"
-labels = {"x": "Members", "y": "Contributions"}
-fig = px.bar(x=names, y=codex, title=title, labels=labels)
-fig.show()"""

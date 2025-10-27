@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 
-def api_merge():
+def _api_merge():
     """Merge the potion info from guild api data to player api data."""
     guildpath = Path('guild_api_response.json')
     playerpath = Path('playerdata.json')
