@@ -7,7 +7,7 @@ from _guildmembers import _guildmembers
 from _api_merge import _api_merge
 from _market_data import _market_data
 
-_guild_api(25,"66d45768-7562-4762-bda1-b9441524e356") # example _guild_api(30,"abcd-12345-6789")
+_guild_api(69,"GUILDAPI") # example _guild_api(30,"abcd-12345-6789")
 _market_data()
 _guildmembers()
 _api_merge()
