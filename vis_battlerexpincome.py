@@ -6,7 +6,7 @@ from _guild_api import _guild_api
 from _guildmembers import _guildmembers
 from _api_merge import _api_merge
 
-_guild_api(GUILDID, "GUILDAPI") # example _guild_api(30,"abcd-12345-6789")
+_guild_api(69, "GUILDAPI") # example _guild_api(30,"abcd-12345-6789")
 _guildmembers()
 _api_merge()
 
