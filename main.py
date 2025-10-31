@@ -1,6 +1,7 @@
 from Manadata import ManaData
 
 if __name__ == "__main__":
+
     ID = 69 # Put ID here.
     API = "abcd-1234-efgh-5678" # Put API here in quotation marks "".
 

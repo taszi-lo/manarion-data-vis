@@ -33,10 +33,8 @@ class ManaData():
                     try:
                         response_dict = r.json()
                         self.guilddata = response_dict
-                        response_string = json.dumps(response_dict, indent=4)
-                        Path("guild_api_response.json").write_text(response_string)
+                        # writing to file if necessary: Path("guild_api_response.json").write_text(json.dumps(response_dict, indent=4)) 
                         print("Guild data saved successfully.")
-                        return self.guilddata
                     except JSONDecodeError:
                         print("Received invalid JSON. Retrying..")
                 else:
@@ -74,7 +72,7 @@ class ManaData():
             else:
                 raise ConnectionError(f"All retries failed for player {player}.")
         
-        Path("playerdata.json").write_text(json.dumps(self.playerdata, indent=4))
+        # writing to file if necessary: Path("playerdata.json").write_text(json.dumps(self.playerdata, indent=4))
         
 
     def _market_data(self):
@@ -86,9 +84,8 @@ class ManaData():
         # Explore the structure of the data, write it to file.
         if r.status_code == 200:
             self.marketdata = r.json()
-            Path('market_values.json').write_text(json.dumps(self.marketdata, indent=4))
+            # writing to file if necessary: Path('market_values.json').write_text(json.dumps(self.marketdata, indent=4))
             print("Market data saved successfully.")
-            return self.marketdata
         else:
             print(f"Failed to fetch market data: {r.status_code}")
             return None
@@ -119,8 +116,7 @@ class ManaData():
             p["TaxRate"] = taxes.get(loot_id, 0) if loot_id else 0
             p["ExpTaxRate"] = taxes.get("42",0)
             
-        path2 = Path('extended_playerdata.json')
-        path2.write_text(json.dumps(self.playerdata, indent=4))
+        # write to file if necessary: Path('extended_playerdata.json').write_text(json.dumps(self.playerdata, indent=4))
 
     def vis_battlerexpincome(self):
         """A visualization of the battlers' experience income per action."""
