@@ -13,6 +13,9 @@ class ManaData():
         """Initializing guild ID and api."""
         self.ID = ID
         self.API = API
+        self.playerdata = []
+        self.guilddata = None
+        self.marketdata = None
         self._guild_api()
         self._guildmembers()
         self._api_merge()
@@ -21,7 +24,6 @@ class ManaData():
     def _guild_api(self, max_retries=3, delay=1):
         """ Fetch guild data and write it toa file."""
         url= f"https://api.manarion.com/guilds/{self.ID}?apikey={self.API}"
-        print(f"Requesting guild data from {url}")
         for attempt in range(1, max_retries+1):
             try:
                 r = requests.get(url, timeout=10)
@@ -30,10 +32,11 @@ class ManaData():
                 if r.status_code == 200:
                     try:
                         response_dict = r.json()
+                        self.guilddata = response_dict
                         response_string = json.dumps(response_dict, indent=4)
                         Path("guild_api_response.json").write_text(response_string)
                         print("Guild data saved successfully.")
-                        return response_dict
+                        return self.guilddata
                     except JSONDecodeError:
                         print("Received invalid JSON. Retrying..")
                 else:
@@ -43,20 +46,14 @@ class ManaData():
 
     def _guildmembers(self, max_retries=3, delay=1):
         """Fetch each member's data and write it to a file."""
-        path = Path('guild_api_response.json')
-        if not path.exists():
-            raise FileNotFoundError("guild_api_response.json not found. Run _guild_api() first.")
-        try:
-            data = json.loads(path.read_text(encoding='utf-8'))
-            members = data["Members"]
-        except (json.JSONDecodeError, KeyError):
-            raise ValueError("guild_api_response.json is invalid or missing 'Members'.")
-
+        if not self.guilddata:
+            raise ValueError("guilddata not loaded. Run _guild_api() first.")
+        members = self.guilddata['Members']
         players = []
         for member_id, info in members.items():
             players.append(info["Name"])
 
-        playerdicts = []
+        self.playerdata = []
         for player in players:
             url= f"https://api.manarion.com/players/{player}"
 
@@ -65,20 +62,19 @@ class ManaData():
                     r = requests.get(url, timeout=10)
                     if r.status_code == 200:
                         try:
-                            playerdicts.append(r.json())
+                            self.playerdata.append(r.json())
                             break
                         except JSONDecodeError:
                             print(f"Invalid JSON for {player}. Retrying..")
                     else:
-                        print(f"Status {r.status_code}for {player}. Retrying..")
+                        print(f"Status {r.status_code} for {player}. Retrying..")
                 except RequestException as e:
                     print(f"Error fetching {player}: {e}. Retrying..")
                 time.sleep(delay)
             else:
                 raise ConnectionError(f"All retries failed for player {player}.")
         
-        playerstring = json.dumps(playerdicts, indent=4)
-        Path("playerdata.json").write_text(playerstring)
+        Path("playerdata.json").write_text(json.dumps(self.playerdata, indent=4))
         
 
     def _market_data(self):
@@ -88,22 +84,20 @@ class ManaData():
         print(f"Status code: {r.status_code}")
 
         # Explore the structure of the data, write it to file.
-        response_dict = r.json()
-        response_string = json.dumps(response_dict, indent=4)
-        path = Path('market_values.json')
-        path.write_text(response_string)
+        if r.status_code == 200:
+            self.marketdata = r.json()
+            Path('market_values.json').write_text(json.dumps(self.marketdata, indent=4))
+            print("Market data saved successfully.")
+            return self.marketdata
+        else:
+            print(f"Failed to fetch market data: {r.status_code}")
+            return None
 
     def _api_merge(self):
-        """Merge the potion info from guild api data to player api data."""
-        guildpath = Path('guild_api_response.json')
-        playerpath = Path('playerdata.json')
-
-        guildcontent = guildpath.read_text()
-        playercontent = playerpath.read_text()
-
-        guilddata = json.loads(guildcontent)
-        playerdata = json.loads(playercontent)
-
+        """Merge the potion and tax info from guild api data to player api data."""
+        if not self.guilddata or not self.playerdata:
+            raise ValueError("Missing data. Run _guild_api() and _guildmembers() first.")
+        
         ACTIONTYPE_TO_ID = {
             "battle": '1',
             "fishing": '7',
@@ -111,9 +105,9 @@ class ManaData():
             "mining": '9',
         }
 
-        for p in playerdata:
+        for p in self.playerdata:
             name = p['Name']
-            for member_data in guilddata["Members"].values():
+            for member_data in self.guilddata["Members"].values():
                 if member_data.get("Name") == name:
                     p["Potions"] = member_data.get("Potions", {})
                     p["Rank"] = member_data.get("Rank")
@@ -121,55 +115,43 @@ class ManaData():
             actiontype = p.get("ActionType", "").lower()
             loot_id = ACTIONTYPE_TO_ID.get(actiontype)
             rank = str(p.get("Rank"))
-            taxes = guilddata.get("Ranks", {}).get(rank, {}).get("taxes", {})
+            taxes = self.guilddata.get("Ranks", {}).get(rank, {}).get("taxes", {})
             p["TaxRate"] = taxes.get(loot_id, 0) if loot_id else 0
+            p["ExpTaxRate"] = taxes.get("42",0)
             
         path2 = Path('extended_playerdata.json')
-        path2.write_text(json.dumps(playerdata, indent=4))
+        path2.write_text(json.dumps(self.playerdata, indent=4))
 
     def vis_battlerexpincome(self):
         """A visualization of the battlers' experience income per action."""
-        path = Path('extended_playerdata.json')
-        content = path.read_text(encoding='utf-8')
-        data = json.loads(content)
-        guildpath = Path('guild_api_response.json')
-        guildcontent = guildpath.read_text(encoding='utf-8')
-        guilddata = json.loads(guildcontent)
+        guildname = self.guilddata['Name']
 
-        guildname = guilddata['Name']
+        battlers, mob_strength, exp_boost, exp_codex, intellect, exp_tax = [], [], [], [], [], []
 
-        battlers, mob_strength, exp_boost, exp_codex, intellect = [], [], [], [], []
-
-        for member in data:
+        for member in self.playerdata:
             if member["ActionType"] == "battle":
                 battlers.append(member["Name"])
                 mob_strength.append(member['Enemy'])
                 exp_boost.append(member['TotalBoosts']['120']+(member['TotalBoosts']['108']+100)/100*member['Potions'].get('120',0)*5)
                 exp_codex.append(member['TotalBoosts']['100'])
                 intellect.append(1+(math.log((1+member['TotalBoosts']['3']/10000),10))/4)
+                exp_tax.append(member.get('ExpTaxRate',0))
         exp_per_hit = []
 
-        for a, b, c, d in zip(mob_strength, exp_boost, exp_codex, intellect):
-            result = (0.0002*(a+150)**2 + (a+150)**1.2 + 10*(a+150)) * (1+b/100) *(1+c/100) * d * 0.80
+        for a, b, c, d,e in zip(mob_strength, exp_boost, exp_codex, intellect, exp_tax):
+            result = (0.0002*(a+150)**2 + (a+150)**1.2 + 10*(a+150)) * (1+b/100) *(1+c/100) * d * (1-e/100) 
             exp_per_hit.append(result)
 
-        labels = {"x":"Battlers", "y": "Exp per hit"}
+        labels = {"x":"Battlers", "y": "Exp per action"}
         fig = px.bar(x=battlers, y=exp_per_hit, title=f"Exp income of the {guildname} battlers", labels=labels )
         fig.update_layout(xaxis={'categoryorder':'total ascending'})
         fig.show()
 
     def vis_taxed_resources(self):
         """Visualizing the taxed resources of the gatherers of the guild.""" 
-        path = Path('guild_api_response.json')
-        content = path.read_text(encoding="utf-8")
-        data = json.loads(content)
-        guildpath = Path('guild_api_response.json')
-        guildcontent = guildpath.read_text(encoding='utf-8')
-        guilddata = json.loads(guildcontent)
 
-        guildname = guilddata['Name']
-
-        members = data['Members']
+        guildname = self.guilddata['Name']
+        members = self.guilddata['Members']
 
         filtered_members = []
         fish_7 = []
@@ -220,25 +202,15 @@ class ManaData():
 
     def vis_dustincome(self):
         """Visualization of the daily dust income of the guild members."""
-        playerpath = Path('extended_playerdata.json')
-        marketpath = Path('market_values.json')
-        guildpath = Path('guild_api_response.json')
-        playercontent = playerpath.read_text(encoding='utf-8')
-        marketcontent = marketpath.read_text(encoding='utf-8')
-        guildcontent = guildpath.read_text(encoding='utf-8')
-        playerdata = json.loads(playercontent)
-        marketdata = json.loads(marketcontent)
-        guilddata = json.loads(guildcontent)
-
-        guildname = guilddata['Name']
-        fishprice = (marketdata['Buy']['7']+marketdata['Sell']['7'])/2
-        woodprice = (marketdata['Buy']['8']+marketdata['Sell']['8'])/2
-        ironprice = (marketdata['Buy']['9']+marketdata['Sell']['9'])/2
-        herbprice = ((marketdata['Buy']['40']+marketdata['Sell']['40'])/2 + (marketdata['Buy']['41']+marketdata['Sell']['41'])/2)/2
+        guildname = self.guilddata['Name']
+        fishprice = (self.marketdata['Buy']['7']+self.marketdata['Sell']['7'])/2
+        woodprice = (self.marketdata['Buy']['8']+self.marketdata['Sell']['8'])/2
+        ironprice = (self.marketdata['Buy']['9']+self.marketdata['Sell']['9'])/2
+        herbprice = ((self.marketdata['Buy']['40']+self.marketdata['Sell']['40'])/2 + (self.marketdata['Buy']['41']+self.marketdata['Sell']['41'])/2)/2
 
         players = []
 
-        for member in playerdata:
+        for member in self.playerdata:
             if member["ActionType"] == "battle":
                 result = ((0.0001*(member['Enemy']+150)**2 + (member['Enemy']+150)**1.2 + 10*(member['Enemy']+150)) 
                         * (1.01**(((member['Enemy']+150)-150000)/2000)))*(1+member['TotalBoosts']['121']/100)*(1+member['TotalBoosts']['101']/100)*(1-member["TaxRate"]/100)*28800
