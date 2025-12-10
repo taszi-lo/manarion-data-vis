@@ -152,7 +152,7 @@ class ManaData():
         labels = {"x":"Battlers", "y": "Exp per action"}
         fig = px.bar(x=battlers, y=exp_per_hit, title=f"Exp income of the {guildname} battlers", labels=labels )
         fig.update_layout(xaxis={'categoryorder':'total ascending'})
-        fig.show()
+        fig.write_html("battlerexp.html")
 
     def vis_taxed_resources(self):
         """Visualizing the taxed resources of the gatherers of the guild.""" 
@@ -205,7 +205,7 @@ class ManaData():
             xaxis_title ="Member",
             yaxis_title ="Total contribution",
         )
-        fig.show()
+        fig.write_html("taxed_resources.html")
 
     def vis_dustincome(self):
         """Visualization of the daily dust income of the guild members."""
@@ -326,7 +326,7 @@ class ManaData():
             xaxis=dict(categoryorder='array', categoryarray=sorted_names)
         )
 
-        fig.show()
+        fig.write_html("dustincome.html")
     
     def vis_investments(self):
         """Visualization of the different type of resources invested for each player."""
@@ -382,6 +382,9 @@ class ManaData():
                 (member['BaseBoosts'].get('130',0)*(member['BaseBoosts'].get('130',0)+1)*(2*member['BaseBoosts'].get('130',0)+1))/6*self.ironprice
                 + (member['BaseBoosts'].get('131',0)*(member['BaseBoosts'].get('131',0)+1)*(2*member['BaseBoosts'].get('131',0)+1))/6*self.fishprice
                 + (member['BaseBoosts'].get('132',0)*(member['BaseBoosts'].get('132',0)+1)*(2*member['BaseBoosts'].get('132',0)+1))/6*self.woodprice
+                + member['MageTowerInvestment'].get('7',0)*self.ironprice
+                + member['MageTowerInvestment'].get('8',0)*self.fishprice
+                + member['MageTowerInvestment'].get('9',0)*self.woodprice
             )
             res_investment.append(res)
             dust = (
@@ -390,6 +393,7 @@ class ManaData():
                 + (member['BaseBoosts'].get('124',0)*(member['BaseBoosts'].get('124',0)+1)*(2*member['BaseBoosts'].get('124',0)+1))/6*5
                 + 1000000*(2**member['BaseBoosts'].get('133',0)-1)
                 + 100000000*(1.1**member['BaseBoosts'].get('108',0)-1)
+                + member['MageTowerInvestment'].get('1',0)
             )
             dust_investment.append(dust)
             name = member["Name"]
@@ -417,4 +421,4 @@ class ManaData():
         fig.add_trace(go.Bar(x=names, y=tome_investment, marker_color="Black", name="Tomes"))
         fig.add_trace(go.Bar(x=names, y=shard_investment, marker_color="Red", name="Shards"))
         fig.update_layout(barmode='stack', title="Total investments")
-        fig.show()
+        fig.write_html("investments.html")

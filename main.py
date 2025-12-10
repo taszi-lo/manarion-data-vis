@@ -3,7 +3,7 @@ from Manadata import ManaData
 if __name__ == "__main__":
 
     ID = 69 # Put ID here.
-    API = "abcd-1234-efgh-5678" # Put API here in quotation marks "".
+    API = "1234-abcd-5678-efgh" # Put API here in quotation marks "".
 
     mana = ManaData(
         ID = ID,
