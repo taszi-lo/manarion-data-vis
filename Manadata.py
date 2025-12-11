@@ -215,7 +215,7 @@ class ManaData():
         for member in self.playerdata:
             if member["ActionType"] == "battle":
                 result = ((0.0001*(member['Enemy']+150)**2 + (member['Enemy']+150)**1.2 + 10*(member['Enemy']+150)) 
-                        * (1.01**(((member['Enemy']+150)-150000)/2000)))*(1+member['TotalBoosts']['121']/100)*(1+member['TotalBoosts']['101']/100)*(1-member["TaxRate"]/100)*28800
+                        * (1.01**(((member['Enemy']+150)-150000)/2000)))*(1+member['TotalBoosts']['121']/100)*(1+member['TotalBoosts']['101']/100)*(1-member["TaxRate"]/100)*28800*(1+member['TotalBoosts'].get('161',0)*0.002)
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
                 farm_upkeep = farm_production * 150000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
