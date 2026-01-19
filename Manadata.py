@@ -23,6 +23,7 @@ class ManaData():
         self.fishprice = (self.marketdata['Buy'].get('7',0)+self.marketdata['Sell'].get('7',0))/2
         self.woodprice = (self.marketdata['Buy'].get('8',0)+self.marketdata['Sell'].get('8',0))/2
         self.ironprice = (self.marketdata['Buy'].get('9',0)+self.marketdata['Sell'].get('9',0))/2
+        self.resprice = (self.fishprice+self.woodprice+self.ironprice)/3
         self.codexprice = (self.marketdata["Buy"].get('3',0)+self.marketdata["Sell"].get('3',0))/2
         self.shardprice = (self.marketdata["Buy"].get('2',0)+self.marketdata["Sell"].get('2',0))/2
         self.fireprice = (self.marketdata["Buy"].get('13',0)+self.marketdata["Sell"].get('13',0))/2
@@ -217,7 +218,7 @@ class ManaData():
                 result = ((0.0001*(member['Enemy']+150)**2 + (member['Enemy']+150)**1.2 + 10*(member['Enemy']+150)) 
                         * (1.01**(((member['Enemy']+150)-150000)/2000)))*(1+member['TotalBoosts']['121']/100)*(1+member['TotalBoosts']['101']/100)*(1-member["TaxRate"]/100)*28800*(1+member['TotalBoosts'].get('161',0)*0.002)
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 150000 * 24
+                farm_upkeep = farm_production * 75000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('120',0)*(member['Potions'].get('120',0)+1)/2+0.0002*member["Potions"].get("120",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
@@ -229,7 +230,7 @@ class ManaData():
             elif member["ActionType"] == "mining":
                 result1 = member['TotalBoosts']['30']*(member['TotalBoosts']['124']/100 + (member['Potions'].get('124',0)/10)*(1+member['TotalBoosts']['108']/100)+member["MiningLevel"]*0.03)*(1+member['TotalBoosts']['106']/100)*(1-member["TaxRate"]/100)*28800
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 150000 * 24
+                farm_upkeep = farm_production * 75000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('124',0)*(member['Potions'].get('124',0)+1)/2+0.0002*member["Potions"].get("124",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
@@ -241,7 +242,7 @@ class ManaData():
             elif member["ActionType"] == "fishing":
                 result2 = member['TotalBoosts']['31']*(member['TotalBoosts']['124']/100 + (member['Potions'].get('124',0)/10)*(1+member['TotalBoosts']['108']/100)+member["FishingLevel"]*0.03)*(1+member['TotalBoosts']['106']/100)*(1-member["TaxRate"]/100)*28800
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 150000 * 24
+                farm_upkeep = farm_production * 75000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('124',0)*(member['Potions'].get('124',0)+1)/2+0.0002*member["Potions"].get("124",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
@@ -253,7 +254,7 @@ class ManaData():
             elif member["ActionType"] == "woodcutting":
                 result3 = member['TotalBoosts']['32']*(member['TotalBoosts']['124']/100 + (member['Potions'].get('124',0)/10)*(1+member['TotalBoosts']['108']/100)+member["WoodcuttingLevel"]*0.03)*(1+member['TotalBoosts']['106']/100)*(1-member["TaxRate"]/100)*28800
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 150000 * 24
+                farm_upkeep = farm_production * 75000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('124',0)*(member['Potions'].get('124',0)+1)/2+0.0002*member["Potions"].get("124",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
