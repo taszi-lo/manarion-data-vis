@@ -44,7 +44,8 @@ class ManaData():
                     try:
                         response_dict = r.json()
                         self.guilddata = response_dict
-                        # writing to file if necessary: Path("guild_api_response.json").write_text(json.dumps(response_dict, indent=4)) 
+                        # writing to file if necessary: 
+                        # Path("guild_api_response.json").write_text(json.dumps(response_dict, indent=4)) 
                         print("Guild data saved successfully.")
                         break
                     except JSONDecodeError:
@@ -218,7 +219,7 @@ class ManaData():
                 result = ((0.0001*(member['Enemy']+150)**2 + (member['Enemy']+150)**1.2 + 10*(member['Enemy']+150)) 
                         * (1.01**(((member['Enemy']+150)-150000)/2000)))*(1+member['TotalBoosts']['121']/100)*(1+member['TotalBoosts']['101']/100)*(1-member["TaxRate"]/100)*28800*(1+member['TotalBoosts'].get('161',0)*0.002)
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 75000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
+                farm_upkeep = farm_production * 50000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('120',0)*(member['Potions'].get('120',0)+1)/2+0.0002*member["Potions"].get("120",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
@@ -230,7 +231,7 @@ class ManaData():
             elif member["ActionType"] == "mining":
                 result1 = member['TotalBoosts']['30']*(member['TotalBoosts']['124']/100 + (member['Potions'].get('124',0)/10)*(1+member['TotalBoosts']['108']/100)+member["MiningLevel"]*0.03)*(1+member['TotalBoosts']['106']/100)*(1-member["TaxRate"]/100)*28800
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 75000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
+                farm_upkeep = farm_production * 50000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('124',0)*(member['Potions'].get('124',0)+1)/2+0.0002*member["Potions"].get("124",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
@@ -242,7 +243,7 @@ class ManaData():
             elif member["ActionType"] == "fishing":
                 result2 = member['TotalBoosts']['31']*(member['TotalBoosts']['124']/100 + (member['Potions'].get('124',0)/10)*(1+member['TotalBoosts']['108']/100)+member["FishingLevel"]*0.03)*(1+member['TotalBoosts']['106']/100)*(1-member["TaxRate"]/100)*28800
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 75000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
+                farm_upkeep = farm_production * 50000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('124',0)*(member['Potions'].get('124',0)+1)/2+0.0002*member["Potions"].get("124",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
@@ -254,7 +255,7 @@ class ManaData():
             elif member["ActionType"] == "woodcutting":
                 result3 = member['TotalBoosts']['32']*(member['TotalBoosts']['124']/100 + (member['Potions'].get('124',0)/10)*(1+member['TotalBoosts']['108']/100)+member["WoodcuttingLevel"]*0.03)*(1+member['TotalBoosts']['106']/100)*(1-member["TaxRate"]/100)*28800
                 farm_production = 2.5 * ((1+member['BaseBoosts']['130']/100)**0.9 * (1+member['BaseBoosts']['131']/100)**0.9 * (1+member['BaseBoosts']['132']/100)**0.9)
-                farm_upkeep = farm_production * 75000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
+                farm_upkeep = farm_production * 50000 * 24 - member['TotalBoosts'].get('134',0)*1000000000 * 24
                 farm_income = farm_production * self.herbprice * 24-farm_upkeep
                 potion_upkeep = ((((member["Potions"].get('122',0)*(member["Potions"].get('122',0)+1))+0.0002*member["Potions"].get('122',0)**3) + (member["Potions"].get('124',0)*(member['Potions'].get('124',0)+1)/2+0.0002*member["Potions"].get("124",0)**3))*self.herbprice)*24/(1+member['TotalBoosts']['110']/100)
                 players.append({
@@ -352,19 +353,28 @@ class ManaData():
             codex *= self.codexprice
             codex_investment.append(codex)
             tome = (
+                # spell tomes
                 ((member['BaseBoosts'].get('21',0)*(member['BaseBoosts'].get('21',0)+1))/2)**2*self.fireprice 
                 + ((member['BaseBoosts'].get('22',0)*(member['BaseBoosts'].get('22',0)+1))/2)**2*self.waterprice
                 + ((member['BaseBoosts'].get('23',0)*(member['BaseBoosts'].get('23',0)+1))/2)**2*self.natureprice
+                # shield tome
                 + ((member['BaseBoosts'].get('24',0)*(member['BaseBoosts'].get('24',0)+1))/2)*self.shieldprice
+                # resistance tomes
                 + ((member['BaseBoosts'].get('83',0)*(member['BaseBoosts'].get('83',0)+1))/2)**2*self.fireprice
                 + ((member['BaseBoosts'].get('84',0)*(member['BaseBoosts'].get('84',0)+1))/2)**2*self.waterprice
                 + ((member['BaseBoosts'].get('85',0)*(member['BaseBoosts'].get('85',0)+1))/2)**2*self.natureprice
+                # ts xp tomes
+                + ((member['BaseBoosts'].get('33',0)*(member['BaseBoosts'].get('21',0)+1))/2)**2*self.fireprice 
+                + ((member['BaseBoosts'].get('34',0)*(member['BaseBoosts'].get('22',0)+1))/2)**2*self.waterprice
+                + ((member['BaseBoosts'].get('35',0)*(member['BaseBoosts'].get('23',0)+1))/2)**2*self.natureprice
             )
             tome_investment.append(tome)
             shard = (
+                # tradeskill
                 member['BaseBoosts'].get("30",0)*(member['BaseBoosts'].get("30",0)+1)*(1+0.000005*(2*member['BaseBoosts'].get("30",0)+1)/6)
                 + member['BaseBoosts'].get("31",0)*(member['BaseBoosts'].get("31",0)+1)*(1+0.000005*(2*member['BaseBoosts'].get("31",0)+1)/6)
                 + member['BaseBoosts'].get("32",0)*(member['BaseBoosts'].get("32",0)+1)*(1+0.000005*(2*member['BaseBoosts'].get("32",0)+1)/6)
+                # battle
                 + member['BaseBoosts'].get('40',0)*(member['BaseBoosts'].get('40',0)+1)
                 + member['BaseBoosts'].get('41',0)*(member['BaseBoosts'].get('41',0)+1)
                 + member['BaseBoosts'].get('42',0)*(member['BaseBoosts'].get('42',0)+1)
@@ -379,13 +389,23 @@ class ManaData():
             )
             shard *= self.shardprice
             shard_investment.append(shard)
+            N_fire = member['BaseBoosts'].get('25',0)
+            N_water = member['BaseBoosts'].get('26',0)
+            N_nature = member['BaseBoosts'].get('27',0)
             res = (
+                # farm
                 (member['BaseBoosts'].get('130',0)*(member['BaseBoosts'].get('130',0)+1)*(2*member['BaseBoosts'].get('130',0)+1))/6*self.ironprice
                 + (member['BaseBoosts'].get('131',0)*(member['BaseBoosts'].get('131',0)+1)*(2*member['BaseBoosts'].get('131',0)+1))/6*self.fishprice
                 + (member['BaseBoosts'].get('132',0)*(member['BaseBoosts'].get('132',0)+1)*(2*member['BaseBoosts'].get('132',0)+1))/6*self.woodprice
+                # megatower
                 + member['MageTowerInvestment'].get('7',0)*self.ironprice
                 + member['MageTowerInvestment'].get('8',0)*self.fishprice
                 + member['MageTowerInvestment'].get('9',0)*self.woodprice
+                # tome drop boost
+                + 1000 *(999*(N_fire*(N_fire+1)/2)**2 + N_fire*(N_fire+1)*(2*N_fire+1)*(3*N_fire**2+3*N_fire-1)/30)*self.ironprice
+                + 1000 *(999*(N_water*(N_water+1)/2)**2 + N_water*(N_water+1)*(2*N_water+1)*(3*N_water**2+3*N_water-1)/30)*self.fishprice
+                + 1000 *(999*(N_nature*(N_nature+1)/2)**2 + N_nature*(N_nature+1)*(2*N_nature+1)*(3*N_nature**2+3*N_nature-1)/30)*self.woodprice
+
             )
             res_investment.append(res)
             dust = (
